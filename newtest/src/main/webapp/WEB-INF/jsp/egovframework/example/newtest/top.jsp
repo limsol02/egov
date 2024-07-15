@@ -77,11 +77,15 @@
 		<a class="navbar-brand" href="${path}/main.do">MAIN</a>
 		<div class="collapse navbar-collapse" id="collapsibleNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="${path}/#">링크1</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/#">파일업로드(참여자용)</a>
 				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">링크2</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 확인 리스트(관리자용)</a>
 				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">링크3</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 등록(관리자용)</a>
+				</li>
+				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>
+				</li>
+				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>
 				</li>
 			</ul>
 		</div>
