@@ -82,5 +82,4 @@ public interface EgovSampleService {
 	 * @exception
 	 */
 	int selectSampleListTotCnt(SampleDefaultVO searchVO);
-	List<Member> test() throws Exception;
 }

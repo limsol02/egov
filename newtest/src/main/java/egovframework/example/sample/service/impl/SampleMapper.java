@@ -88,5 +88,4 @@ public interface SampleMapper {
 	 * @exception
 	 */
 	int selectSampleListTotCnt(SampleDefaultVO searchVO);
-	List<Member> test() throws Exception;
 }

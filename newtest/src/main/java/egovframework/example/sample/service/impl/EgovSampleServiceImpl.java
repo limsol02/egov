@@ -137,8 +137,5 @@ public class EgovSampleServiceImpl extends EgovAbstractServiceImpl implements Eg
 	public int selectSampleListTotCnt(SampleDefaultVO searchVO) {
 		return sampleDAO.selectSampleListTotCnt(searchVO);
 	}
-@Override
-public List<Member> test() throws Exception {
-	return sampleDAO.test();
-}
+
 }
