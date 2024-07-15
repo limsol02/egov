@@ -74,10 +74,10 @@
 			삭제</button>
 	</div>
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-		<a class="navbar-brand" href="${path}/main.do">MAIN</a>
+		<a class="navbar-brand" href="${path}/sess.do">MAIN</a>
 		<div class="collapse navbar-collapse" id="collapsibleNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="${path}/#">파일업로드(참여자용)</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/participant.do">파일업로드(참여자용)</a>
 				</li>
 				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 확인 리스트(관리자용)</a>
 				</li>
