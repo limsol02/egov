@@ -4,6 +4,7 @@ public class FileStorage {
 	private int file_id;
 	private String fname;
 	private String path;
+	private int participant_id;
 	public int getFile_id() {
 		return file_id;
 	}
@@ -22,6 +23,13 @@ public class FileStorage {
 	public void setPath(String path) {
 		this.path = path;
 	}
+	
+	public int getParticipant_id() {
+		return participant_id;
+	}
+	public void setParticipant_id(int participant_id) {
+		this.participant_id = participant_id;
+	}
 	public FileStorage(String fname, String path) {
 		super();
 		this.fname = fname;
@@ -30,4 +38,11 @@ public class FileStorage {
 	public FileStorage() {
 		// TODO Auto-generated constructor stub
 	}
+	public FileStorage(String fname, String path, int participant_id) {
+		super();
+		this.fname = fname;
+		this.path = path;
+		this.participant_id = participant_id;
+	}
+	
 }

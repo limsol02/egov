@@ -89,7 +89,5 @@
 				</choose>
 			</if>
 	</select>
-	<select id="test" resultType="member">
-		 select * from member
-	</select>
+	
 </mapper>
