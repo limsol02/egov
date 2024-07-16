@@ -4,7 +4,9 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import egovframework.example.sample.service.FileStorage;
 import egovframework.example.sample.service.Participant;
-@Mapper("juMapper")
+@Mapper("JuMapper")
 public interface JuMapper {
+
+	void addEvaluation(String item)throws Exception;
 	
 }
