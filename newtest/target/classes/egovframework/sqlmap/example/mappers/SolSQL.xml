@@ -43,4 +43,13 @@
 		</where>
 		order by p.participant_id
 	</select>
+	
+	<select id="comTitleBycomId" resultType="competition" parameterType="int">
+		select c.* from competition c 
+		where c.competition_id = (select competition_id from participant 
+		where  participant_id = #{participant_id})
+	</select>
+	<delete id="delPart" parameterType="int">
+		delete from participant where participant_id = #{participant_id}
+	</delete>
 </mapper>

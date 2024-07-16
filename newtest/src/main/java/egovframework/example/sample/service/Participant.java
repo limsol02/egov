@@ -5,8 +5,16 @@ public class Participant {
 	private int competition_id;
 	private String application_title;
 	private int total_score;
+    private String competitionTitle; // 공모전 이름 필드 추가
 	private FileStorage file;
 	
+	
+	public String getCompetitionTitle() {
+		return competitionTitle;
+	}
+	public void setCompetitionTitle(String competitionTitle) {
+		this.competitionTitle = competitionTitle;
+	}
 	public int getParticipant_id() {
 		return participant_id;
 	}
