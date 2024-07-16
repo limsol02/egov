@@ -31,15 +31,18 @@ public class SolController {
 	@Resource(name="solService")
 	private SolService service;
 	
+	// 파일업로드 경로
 	@Value("${file.upload.path}")
 	private String uploadPath;
-		
+	
+	// 메인페이지 호출
 	@RequestMapping(value = "/sess.do", method = RequestMethod.GET)
 	public String sess(HttpSession session, Model d) throws Exception {
 		System.out.println(session.getAttribute("role"));
 		return "newtest/top";
 	}
-
+	
+	// 세션설정 메소드 
 	@RequestMapping(value = "/session.do", method = RequestMethod.GET , produces = "text/plain;charset=UTF-8")
 	 @ResponseBody 
 	public String sess(@RequestParam("action") String action, HttpSession session, Model d) {
@@ -65,12 +68,15 @@ public class SolController {
 		d.addAttribute("msg", msg);
 		return msg; 
 	}
+	
+	// 공모전 리스트
 	@RequestMapping(value = "/participant.do", method = RequestMethod.GET)
 	public String participant(Model d) throws Exception {
 		d.addAttribute("comList", service.competitionList());
 		return "newtest/upload";
 	}
 	
+	// 파일 업로드 + 참여자 지원 
 	@RequestMapping(value="/insPart.do", method = RequestMethod.POST)
 	public String insPart(@RequestParam("application_title") String applicationTitle,
 						  @RequestParam("competition_id") int competition_id,
@@ -98,19 +104,31 @@ public class SolController {
 	    }
 	}
 	
+	// 지원자 확인 메소드
 	@RequestMapping(value="partList.do", method = RequestMethod.GET)
-	public String partList(Model d, @RequestParam(value="competition_id",  defaultValue = "0")int competition_id) throws Exception {
-		d.addAttribute("comList", service.competitionList());
-		try {
-			System.out.println("competition_id");
-			d.addAttribute("plist", service.partList(competition_id));
-		}catch (Exception e) {
-			System.out.println("찾고찾던에러"+e.getMessage());
-		}
-		
-		return "newtest/participant";
+	public String partList(Model d, HttpSession session, RedirectAttributes redirectAttributes,
+	        @RequestParam(value="competition_id", defaultValue = "0") int competition_id) throws Exception {
+
+	    String role = (String) session.getAttribute("role");
+	    if (role == null || !role.equals("admin")) {
+	        redirectAttributes.addFlashAttribute("message", "접근 권한이 없습니다.");
+	        return "redirect:/sess.do"; // 접근 권한이 없으면 리다이렉트
+	    }
+
+	    d.addAttribute("comList", service.competitionList());
+	    
+	    try {
+	        System.out.println("competition_id: " + competition_id);
+	        d.addAttribute("plist", service.partList(competition_id));
+	    } catch (Exception e) {
+	        System.out.println("찾고찾던에러: " + e.getMessage());
+	    }
+
+	    return "newtest/participant";
 	}
+
 	
+	// 다운로드
 	@RequestMapping(value = "download.do", method = RequestMethod.GET)
 	public void downloadFile(String fileName, HttpServletResponse response) {
 		try {

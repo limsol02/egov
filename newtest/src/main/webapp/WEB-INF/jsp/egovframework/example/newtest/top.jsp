@@ -73,16 +73,21 @@
 		<button type="button" class="btn btn-primary" id="delSession">세션
 			삭제</button>
 	</div>
+
+	<c:if test="${not empty message}">
+		<div class="alert alert-danger">${message}</div>
+	</c:if>
+
 	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 		<a class="navbar-brand" href="${path}/sess.do">MAIN</a>
 		<div class="collapse navbar-collapse" id="collapsibleNavbar">
 			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link" href="${path}/participant.do">파일업로드(참여자용)</a>
-				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/partList.do">참여자 확인 리스트(관리자용)</a>
-				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 등록(관리자용)</a>
-				</li>
+				<li class="nav-item"><a class="nav-link"
+					href="${path}/participant.do">파일업로드(참여자용)</a></li>
+				<li class="nav-item"><a class="nav-link"
+					href="${path}/partList.do">참여자 확인 리스트(관리자용)</a></li>
+				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자
+						등록(관리자용)</a></li>
 				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>
 				</li>
 				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>

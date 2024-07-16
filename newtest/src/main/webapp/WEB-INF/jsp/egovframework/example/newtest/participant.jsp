@@ -13,6 +13,9 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
+<c:if test="${not empty message}">
+    <div class="alert alert-error">${message}</div>
+</c:if>
     <div class="container">
         <h2>지원자 리스트</h2>
         <p>지원자 참여명 & 파일 다운로드</p>
