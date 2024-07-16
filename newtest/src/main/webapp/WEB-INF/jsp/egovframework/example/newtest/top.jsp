@@ -79,7 +79,7 @@
 			<ul class="navbar-nav">
 				<li class="nav-item"><a class="nav-link" href="${path}/participant.do">파일업로드(참여자용)</a>
 				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 확인 리스트(관리자용)</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/partList.do">참여자 확인 리스트(관리자용)</a>
 				</li>
 				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 등록(관리자용)</a>
 				</li>

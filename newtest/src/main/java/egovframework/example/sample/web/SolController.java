@@ -1,8 +1,17 @@
 package egovframework.example.sample.web;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +30,9 @@ public class SolController {
 
 	@Resource(name="solService")
 	private SolService service;
+	
+	@Value("${file.upload.path}")
+	private String uploadPath;
 		
 	@RequestMapping(value = "/sess.do", method = RequestMethod.GET)
 	public String sess(HttpSession session, Model d) throws Exception {
@@ -61,10 +73,12 @@ public class SolController {
 	
 	@RequestMapping(value="/insPart.do", method = RequestMethod.POST)
 	public String insPart(@RequestParam("application_title") String applicationTitle,
+						  @RequestParam("competition_id") int competition_id,
 	                      @RequestParam("files") MultipartFile[] files,
 	                      RedirectAttributes redirectAttributes) throws Exception {
 	    Participant insP = new Participant();
 	    insP.setApplication_title(applicationTitle);
+	    insP.setCompetition_id(competition_id);
 	    FileStorage insF = new FileStorage();
 
 	    try {
@@ -83,5 +97,43 @@ public class SolController {
 	        return "redirect:/errorPage.do";
 	    }
 	}
+	
+	@RequestMapping(value="partList.do", method = RequestMethod.GET)
+	public String partList(Model d, @RequestParam(value="competition_id",  defaultValue = "0")int competition_id) throws Exception {
+		d.addAttribute("comList", service.competitionList());
+		try {
+			System.out.println("competition_id");
+			d.addAttribute("plist", service.partList(competition_id));
+		}catch (Exception e) {
+			System.out.println("찾고찾던에러"+e.getMessage());
+		}
+		
+		return "newtest/participant";
+	}
+	
+	@RequestMapping(value = "download.do", method = RequestMethod.GET)
+	public void downloadFile(String fileName, HttpServletResponse response) {
+		try {
+			File file = new File(uploadPath + fileName);
+			if (file.exists()) {
+				String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+				response.setContentType("application/octet-stream");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"");
+				try (FileInputStream fis = new FileInputStream(file); OutputStream os = response.getOutputStream()) {
+					byte[] buffer = new byte[4096];
+					int bytesRead;
+					while ((bytesRead = fis.read(buffer)) != -1) {
+						os.write(buffer, 0, bytesRead);
+					}
+					os.flush();
+				}
+			} else {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 }

@@ -106,5 +106,8 @@ public class SolServiceImpl extends EgovAbstractServiceImpl implements SolServic
 		}
 		return result;
 	}
-
+	@Override
+	public List<Participant> partList(int competition_id) throws Exception {
+		return dao.partList(competition_id); 
+	}
 }

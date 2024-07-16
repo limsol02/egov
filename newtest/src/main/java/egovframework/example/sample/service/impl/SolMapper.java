@@ -12,5 +12,5 @@ public interface SolMapper {
 	int insFile(FileStorage ins) throws Exception;
 	int insPart(Participant ins) throws Exception;
 	List<Competition> competitionList() throws Exception;
-
+	List<Participant> partList(int competition_id) throws Exception;
 }
