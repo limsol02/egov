@@ -11,8 +11,18 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 
 	
 
-	@Resource(name = "juMapper")
+	@Resource(name = "JuMapper")
 	private JuMapper dao;
+
+	@Override
+	public void addEvaluation(String item) throws Exception {
+		if(item.length()>225) 
+		{
+			throw new Exception("글자수가 너무 많습니다.");
+		}
+		dao.addEvaluation(item);
+		
+	}
 	
 	
 
