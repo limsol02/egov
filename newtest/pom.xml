@@ -46,6 +46,12 @@
 	</repositories>
 
 	<dependencies>
+		<!-- apache commons lang -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.12.0</version>
+		</dependency>
 		<!-- Json Data -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
