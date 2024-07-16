@@ -16,10 +16,10 @@
 <title>어드민 페이지</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-function addEvaluation(){
-	var serData = $('#evaluationForm').serialize();
+function addSheet(){
+	var serData = $('#Form').serialize();
 	$.ajax({
-        url: '${path}/addEvaluation.do',
+        url: '${path}/addSheet.do',
         type: 'post',
         data: serData,
         dataType: 'json',
@@ -34,11 +34,30 @@ function addEvaluation(){
 </script>
 </head>
 <body>
-	<form method="post" id="evaluationForm">
-		평가 항목<input type="text" class="form-control-plaintext" name="Item">
-		
-		<button type="button" class="btn btn-primary" onclick="addEvaluation()">등록</button>
-		<button type="reset" class="btn btn-primary">취소</button>
-	</form>
+
+	<form id="SheetForm">
+        <label for="competitionSelect">공모전 선택하기:</label>
+        <select id="competitionSelect">
+            <option value="">선택해주세요...</option>
+            <c:forEach items="${list}" var="competition">
+                <option value="${competition.competition_id}">
+                    ${competition.competition_title}
+                </option>
+            </c:forEach>
+        </select>
+        
+        <label for="evaluationSelect">평가항목 선택하기:</label>
+        <select id="evaluationSelect">
+            <option value="">선택해주세요...</option>
+            <c:forEach items="${item}" var="Items">
+                <option value="${Items.evaluation_id}">
+                    ${Items.evaluation_items}
+                </option>
+            </c:forEach>
+        </select>
+        
+        <button type="button" class="btn btn-primary" onclick="addSheet()">등록</button>
+     </form>
+       
 </body>
 </html>

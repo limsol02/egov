@@ -5,4 +5,19 @@
 	INSERT INTO evaluationitems(evaluation_items)
 	VALUES(#{item})
 	</insert>
+	
+	<insert id="addCompetition" parameterType="String">
+	INSERT INTO competition(competition_title)
+	VALUES(#{title})
+	</insert>
+	
+	<select id="getCompetitionList" resultType="java.util.Map">
+	SELECT competition_id,competition_title
+	FROM competition
+	</select>
+
+	<select id="getEvaluationItemsList" resultType="java.util.Map">
+	SELECT evaluation_id,evaluation_items
+	FROM evaluationitems
+	</select>
 </mapper>
