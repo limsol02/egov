@@ -2,10 +2,10 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-<c:set var="path" value="${pageContext.request.contextPath }" />
 <jsp:include page="../top.jsp" flush="true" />
+<c:set var="path" value="${pageContext.request.contextPath }" />
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,29 +15,29 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <title>어드민 페이지</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script type="text/javascript">
+function addCompetiton(){
+	var serData = $('#CompetitionForm').serialize();
+	$.ajax({
+        url: '${path}/addCompetition.do',
+        type: 'post',
+        data: serData,
+        dataType: 'json',
+        success: function(response) {
+            alert(response.message);
+        },
+        error: function(xhr, status, err) {
+            alert('오류가 발생했습니다: ' + err);
+        }
+    });
+}
+</script>
 </head>
 <body>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-4">
-      <h3><a href="${path}/competition.do">공모전 등록하기</a></h3>
-    </div>
-    <div class="col-sm-4">
-      <h3>공모전 참여현황</h3>
-      <p>Lorem ipsum dolor..</p>
-    </div>
-    <div class="col-sm-4">
-      <h3>지원자 등록하기</h3>
-      <p>Lorem ipsum dolor..</p>
-    </div>
-    <div class="col-sm-4">
-      	<h3><a href="${path}/evaluation.do">평가 항목 등록하기</a></h3>
-   	 </div>
-    <div class="col-sm-4">
-      <h3><a href="${path}/sheet.do">평가지 만들기</a>평가지 만들기</h3>
-    </div>
-  </div>
-</div>
+	  <form method="post" id="CompetitionForm">
+		공모전 이름 : <input type="text" class="form-control-plaintext" name="title">
+		<button type="button" class="btn btn-primary" onclick="addCompetiton()">등록</button>
+		<button type="reset" class="btn btn-primary">취소</button>
+	</form>
 </body>
 </html>

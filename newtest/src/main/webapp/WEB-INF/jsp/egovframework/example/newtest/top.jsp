@@ -81,7 +81,7 @@
 				</li>
 				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 확인 리스트(관리자용)</a>
 				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 등록(관리자용)</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/admin.do">관리자페이지</a>
 				</li>
 				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>
 				</li>
