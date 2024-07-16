@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="egovframework.example.sample.service.impl.SolMapper">
-	<insert id="insPart" parameterType="participant">
-		insert into participant (competition_id, application_title,total_score) 
-			values(null,#{application_title},null)
+<mapper
+	namespace="egovframework.example.sample.service.impl.SolMapper">
+
+	<resultMap id="partResultMap" type="participant">
+		<id property="participant_id" column="participant_id" />
+		<result property="competition_id" column="competition_id" />
+		<result property="application_title" column="application_title" />
+		<result property="total_score" column="total_score" />
+		<association property="file" javaType="file">
+			<id property="file_id" column="file_id" />
+			<result property="fname" column="fname" />
+			<result property="path" column="path" />
+			<result property="participant_id" column="file_participant_id" />
+		</association>
+	</resultMap>
+
+	<insert id="insPart" parameterType="Participant"
+		useGeneratedKeys="true" keyProperty="participant_id">
+		insert into participant
+		(competition_id, application_title, total_score)
+		values
+		(#{competition_id}, #{application_title}, null)
 	</insert>
+
 	<insert id="insFile" parameterType="file">
-		insert into filestorage (fname, path, Participant_id) values(#{fname},#{path}, #{participant_id})
+		insert into filestorage
+		(fname, path, Participant_id) values(#{fname},#{path},
+		#{participant_id})
 	</insert>
+	<select id="competitionList" resultType="competition">
+		select * from
+		competition
+	</select>
+	<select id="partList" resultMap="partResultMap" parameterType="int">
+		select p.*, f.* from participant p
+		left join filestorage f on p.participant_id = f.participant_id
+		<where>
+			<if test="competition_id != 0">
+				competition_id = #{competition_id}
+			</if>
+		</where>
+		order by p.participant_id
+	</select>
 </mapper>

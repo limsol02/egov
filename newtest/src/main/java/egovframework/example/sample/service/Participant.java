@@ -5,6 +5,8 @@ public class Participant {
 	private int competition_id;
 	private String application_title;
 	private int total_score;
+	private FileStorage file;
+	
 	public int getParticipant_id() {
 		return participant_id;
 	}
@@ -28,6 +30,12 @@ public class Participant {
 	}
 	public void setTotal_score(int total_score) {
 		this.total_score = total_score;
+	}
+	public FileStorage getFile() {
+		return file;
+	}
+	public void setFile(FileStorage file) {
+		this.file = file;
 	}
 	
 }
