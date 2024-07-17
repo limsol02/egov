@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import egovframework.example.sample.service.JuService;
+import egovframework.example.sample.service.Sheet;
 
 @Controller
 public class JuController {
@@ -133,28 +134,17 @@ public class JuController {
         return "newtest/admin/sheet";
 	}
 	//평가지 등록
-//	@ResponseBody
-//	@RequestMapping(value="/addSheet.do", method=RequestMethod.POST)
-//	public ResponseEntity<?> addSheet(HttpSession session,@RequestParam("title")String title,@ModelAttribute("list") List<String>list){
-//		String role = (String) session.getAttribute("role");
-//	    if (jusvc.cheekAdmin(role) == 0) {
-//	    	try {
-//	    		jusvc.addSheet(title,list);
-//	    		Map<String, String> response = new HashMap<>();
-//	    		response.put("message", "평가지가 추가되었습니다.");
-//	    		return ResponseEntity.ok(response);
-//	    	}catch(Exception e) {
-//	    		Map<String, String> response = new HashMap<>();
-//	            response.put("message", "평가지 추가 중 오류가 발생했습니다.");
-//				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                        .body(response);
-//	    	}
-//	    }else 
-//	    {
-//	    	Map<String, String> response = new HashMap<>();
-//	        response.put("message", "관리자 권한이 필요합니다.");
-//	    	return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                    .body(response);
-//	    }
-//	}
+	@ResponseBody
+	@RequestMapping(value="/addSheet.do", method=RequestMethod.POST)
+	public ResponseEntity<?> addSheet(HttpSession session,@ModelAttribute Sheet sheet){
+		// 폼 데이터가 제대로 전달되었는지 확인하기 위해 sheet 객체의 내용을 출력합니다.
+	    System.out.println("공모전 ID: " + sheet.getCompetition_id());
+	    System.out.println("평가항목 ID: " + sheet.getEvaluation_id());
+	    
+	    // 여기서 추가적인 로직을 수행하거나 데이터를 처리할 수 있습니다.
+	    
+	    // ResponseEntity를 사용하여 클라이언트에 응답을 보냅니다.
+	    return ResponseEntity.ok().build();
+		
+	}
 }
