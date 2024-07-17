@@ -20,4 +20,9 @@
 	SELECT evaluation_id,evaluation_items
 	FROM evaluationitems
 	</select>
+	<insert id="addScore" parameterType="egovframework.example.sample.service.Score">
+	INSERT INTO score(Participant_id,sheet_id,score)
+	VALUES(#{Participant_id}, #{sheet_id}, #{score})
+	
+	</insert>
 </mapper>

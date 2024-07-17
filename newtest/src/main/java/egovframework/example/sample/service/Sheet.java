@@ -1,10 +1,12 @@
 package egovframework.example.sample.service;
 
+import java.util.List;
+
 public class Sheet {
 	private int sheet_id;
 	private int competition_id;
 	private int evaluation_id;
-	
+	private List<Integer> slist;
 	public Sheet() {
 	}
 	
@@ -25,6 +27,14 @@ public class Sheet {
 	}
 	public void setEvaluation_id(int evaluation_id) {
 		this.evaluation_id = evaluation_id;
+	}
+
+	public List<Integer> getSlist() {
+		return slist;
+	}
+
+	public void setSlist(List<Integer> slist) {
+		this.slist = slist;
 	}
 	
 }

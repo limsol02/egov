@@ -9,26 +9,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <title>어드민 페이지</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-function addSelectList(){
+$(document).ready(function() {
+    function addSheet() {
+        const selectedEvaluations = [];
+        $('input[name="evaluationSelect"]:checked').each(function() {
+            selectedEvaluations.push($(this).val());
+        });
 
-}
-function addSheet(){
-	
-}
+        const formData = new FormData();
+        formData.append('competition_id', $('#competitionSelect').val());
+        selectedEvaluations.forEach(id => formData.append('evaluation_ids', id));
+
+        // Use AJAX to send the data to the server
+        $.ajax({
+            url: '${path}/addSheet.do',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(res) {
+            	if(res.result){            		
+                alert('공모전이 추가되었습니다.');
+            	}else{
+            	alert('실패');
+            	}
+                // Handle the response from the server if needed
+            },
+            error: function(xhr, status, error) {
+                alert('등록에 실패하였습니다: ' + error);
+                // Handle the error if needed
+            }
+        });
+    }
+
+    // Attach the addSheet function to the button click event
+    $('.btn-success').click(function() {
+        addSheet();
+    });
+});
 </script>
 </head>
 <body>
 
-	<form id="SheetForm">
+<form id="SheetForm">
     <label for="competitionSelect">공모전 선택하기:</label>
-    <select id="competitionSelect">
+    <select id="competitionSelect" class="form-control">
         <option value="">선택해주세요...</option>
         <c:forEach items="${list}" var="competition">
             <option value="${competition.competition_id}">
@@ -37,19 +68,19 @@ function addSheet(){
         </c:forEach>
     </select>
     
-    <label for="evaluationSelect">평가항목 선택하기:</label>
-    <select id="evaluationSelect">
-        <option value="">선택해주세요...</option>
+    <label>평가항목 선택하기:</label>
+    <div>
         <c:forEach items="${item}" var="Items">
-            <option value="${Items.evaluation_id}">
-                ${Items.evaluation_items}
-            </option>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="evaluation_${Items.evaluation_id}" name="evaluationSelect" value="${Items.evaluation_id}">
+                <label class="form-check-label" for="evaluation_${Items.evaluation_id}">
+                    ${Items.evaluation_items}
+                </label>
+            </div>
         </c:forEach>
-    </select>
-    <button type="button" class="btn btn-primary" onclick="addSelectList()">추가</button>
-    <button type="button" class="btn btn-success" onclick="addSheet()">등록하기</button>
+    </div>
+    <button type="button" class="btn btn-success">등록하기</button>
 </form>
 
-       
 </body>
 </html>

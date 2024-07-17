@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import egovframework.example.sample.service.Competition;
 import egovframework.example.sample.service.EvaluationItems;
 import egovframework.example.sample.service.JuService;
+import egovframework.example.sample.service.Score;
 
 
 @Service("juService")
@@ -59,6 +60,13 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 	@Override
 	public List<Map<String, EvaluationItems>> getEvaluationItemsList() {
 		return dao.getEvaluationItemsList();
+	}
+
+	@Override
+	public void addScore(List<Score> score) {
+		for(Score scores : score) {
+			dao.addScore(scores);
+		}
 	}
 
 }
