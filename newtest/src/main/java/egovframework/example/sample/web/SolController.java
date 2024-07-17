@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
@@ -23,12 +24,16 @@ import javax.servlet.http.HttpSession;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,12 +60,10 @@ public class SolController {
 	@Resource(name = "solService")
 	private SolService service;
 
+
 	// 파일업로드 경로
 	@Value("${file.upload.path}")
 	private String uploadPath;
-	// 파일업로드 경로
-	@Value("${file.upload.path02}")
-	private String uploadPath02;
 
 	// 파일 이름을 Base64로 인코딩
 	public String encodeFileName(String fileName) {
@@ -225,20 +228,23 @@ public class SolController {
 	}
 
 	// 참여작 삭제
-	@RequestMapping(value = "/delPart.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/delPart.do", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public Map<String, Object> delPart(@RequestParam("participant_id") int participantId) {
-		Map<String, Object> response = new HashMap<>();
-		try {
-			System.out.println("참여아이디 : " + participantId);
-			int result = service.delPart(participantId);
-			response.put("result", result);
-		} catch (Exception e) {
-			response.put("error", "SQL 에러가 발생했습니다: " + e.getMessage());
-		}
-		return response;
-	}
+	public ResponseEntity<String> delPart(@RequestParam("participant_id") int participantId) {
+	    try {
+	        System.out.println("참여아이디 : " + participantId);
+	        int result = service.delPart(participantId);
 
+	        if (result > 0) {
+	            return ResponseEntity.ok("{\"result\": \"success\"}");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"삭제 실패\"}");
+	        }
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"SQL 에러가 발생했습니다: " + e.getMessage() + "\"}");
+	    }
+	}
+	
 	@PostConstruct
 	public void init() {
 		File uploadDir = new File(uploadPath);
@@ -261,26 +267,35 @@ public class SolController {
 	                String fileName = file.getOriginalFilename();
 	                byte[] bytes = file.getBytes();
 
-	                String fullPath = uploadPath02 + fileName;
+	                String fullPath = uploadPath + fileName;
 	                File outputFile = new File(fullPath);
 	                out = new FileOutputStream(outputFile);
 	                out.write(bytes);
 	                out.close();
-
-	                // 파일 변환
+	                
+	                // PDF 파일 경로 설정
 	                String pdfFileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".pdf";
-	                String pdfFullPath = uploadPath + pdfFileName;
+	                String pdfFilePath = uploadPath + pdfFileName;
+	                File pdfFile = new File(pdfFilePath);
+
+	                
+	                // 파일 변환 (필요시)
 	                if (fileName.endsWith(".docx")) {
-	                    convertDocxToPDF(outputFile, new File(pdfFullPath));
+	                    convertDocxToPDF(outputFile, new File(uploadPath + pdfFile));
 	                } else if (fileName.endsWith(".hwp")) {
-	                    convertHwpToPDF(outputFile, new File(pdfFullPath));
+	                    convertHwpToPDF(outputFile, new File(uploadPath + pdfFile));
 	                }
+	                
+	                // 디버깅 메시지 추가
+	                System.out.println("Original file saved at: " + fullPath);
+	                System.out.println("PDF file saved at: " + pdfFilePath);
+	                System.out.println("PDF file exists: " + pdfFile.exists());
 
 	                printWriter = resp.getWriter();
 	                resp.setContentType("application/json; charset=utf-8");
 
 	                // 파일 이름을 Base64 인코딩 후 URL 인코딩
-	                String encodedFileName = URLEncoder.encode(Base64.getEncoder().encodeToString(pdfFileName.getBytes(StandardCharsets.UTF_8)), "UTF-8");
+	                String encodedFileName = URLEncoder.encode(Base64Utils.encodeToUrlSafeString(fileName.getBytes(StandardCharsets.UTF_8)), "UTF-8");
 	                String fileUrl = req.getContextPath() + "/viewFile.do?filename=" + encodedFileName;
 	                System.out.println("URL : " + fileUrl);
 
@@ -315,14 +330,24 @@ public class SolController {
 	private void convertDocxToPDF(File inputFile, File outputFile) throws Exception {
 	    try (XWPFDocument doc = new XWPFDocument(new FileInputStream(inputFile));
 	         PDDocument pdf = new PDDocument()) {
+
+	    	  // 클래스패스에서 폰트 파일 로드
+	        ClassLoader classLoader = getClass().getClassLoader();
+	        InputStream fontStream = classLoader.getResourceAsStream("fonts/NotoSansKR-Regular.ttf");
+	        if (fontStream == null) {
+	            throw new IOException("폰트 파일을 찾을 수 없습니다.");
+	        }
+	        PDType0Font font = PDType0Font.load(pdf, fontStream);
+
 	        List<XWPFParagraph> paragraphs = doc.getParagraphs();
 	        PDPage page = new PDPage();
 	        pdf.addPage(page);
 	        PDPageContentStream contentStream = new PDPageContentStream(pdf, page);
-	        contentStream.setFont(PDType1Font.HELVETICA, 12);
+	        contentStream.setFont(font, 12);
 
 	        float margin = 50;
 	        float yPosition = page.getMediaBox().getHeight() - margin;
+
 	        for (XWPFParagraph paragraph : paragraphs) {
 	            contentStream.beginText();
 	            contentStream.newLineAtOffset(margin, yPosition);
@@ -334,7 +359,7 @@ public class SolController {
 	                page = new PDPage();
 	                pdf.addPage(page);
 	                contentStream = new PDPageContentStream(pdf, page);
-	                contentStream.setFont(PDType1Font.HELVETICA, 12);
+	                contentStream.setFont(font, 12);
 	                yPosition = page.getMediaBox().getHeight() - margin;
 	            }
 	        }
@@ -394,11 +419,11 @@ public class SolController {
 	        System.out.println("URL Decoded filename: " + urlDecodedFilename);
 
 	        // Base64 디코딩
-	        String filename = new String(Base64.getDecoder().decode(urlDecodedFilename), StandardCharsets.UTF_8);
+	        String filename = new String(Base64Utils.decodeFromUrlSafeString(urlDecodedFilename), StandardCharsets.UTF_8);
 	        System.out.println("Base64 Decoded filename: " + filename);
 
 	        // 파일 경로 확인
-	        File file = new File(uploadPath02 + filename);
+	        File file = new File(uploadPath + filename);
 	        System.out.println("Request to view file: " + file.getAbsolutePath());
 
 	        if (!file.exists()) {
