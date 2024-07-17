@@ -6,12 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -19,14 +20,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +43,11 @@ import egovframework.example.sample.service.Competition;
 import egovframework.example.sample.service.FileStorage;
 import egovframework.example.sample.service.Participant;
 import egovframework.example.sample.service.SolService;
+import kr.dogfoot.hwplib.object.HWPFile;
+import kr.dogfoot.hwplib.object.bodytext.Section;
+import kr.dogfoot.hwplib.object.bodytext.paragraph.Paragraph;
+import kr.dogfoot.hwplib.object.bodytext.paragraph.text.HWPChar;
+import kr.dogfoot.hwplib.reader.HWPReader;
 
 @Controller
 public class SolController {
@@ -51,7 +58,20 @@ public class SolController {
 	// 파일업로드 경로
 	@Value("${file.upload.path}")
 	private String uploadPath;
+	// 파일업로드 경로
+	@Value("${file.upload.path02}")
+	private String uploadPath02;
 
+	// 파일 이름을 Base64로 인코딩
+	public String encodeFileName(String fileName) {
+	    return Base64.getEncoder().encodeToString(fileName.getBytes(StandardCharsets.UTF_8));
+	}
+
+	// 파일 이름을 Base64로 디코딩
+	public String decodeFileName(String encodedFileName) {
+	    return new String(Base64.getDecoder().decode(encodedFileName), StandardCharsets.UTF_8);
+	}
+	
 	// 메인페이지 호출
 	@RequestMapping(value = "/sess.do", method = RequestMethod.GET)
 	public String sess(HttpSession session, Model d) throws Exception {
@@ -227,90 +247,214 @@ public class SolController {
 		}
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/fileUpload.do", method = RequestMethod.POST)
-	public void fileUpload(HttpServletRequest req, HttpServletResponse resp, MultipartHttpServletRequest multiFile)
-			throws Exception {
-		JsonObject jsonObject = new JsonObject();
-		PrintWriter printWriter = null;
-		OutputStream out = null;
-		MultipartFile file = multiFile.getFile("files");
 
-		if (file != null) {
-			if (file.getSize() > 0 && file.getOriginalFilename() != null
-					&& !file.getOriginalFilename().trim().isEmpty()) {
-				try {
-					String fileName = file.getOriginalFilename();
-					byte[] bytes = file.getBytes();
+	@RequestMapping(value = "/fileUpload.do", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public void fileUpload(HttpServletRequest req, HttpServletResponse resp, MultipartHttpServletRequest multiFile) throws Exception {
+	    JsonObject jsonObject = new JsonObject();
+	    PrintWriter printWriter = null;
+	    OutputStream out = null;
+	    MultipartFile file = multiFile.getFile("files");
 
-					String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
-					String fullPath = uploadPath + uniqueFileName;
+	    if (file != null) {
+	        if (file.getSize() > 0 && file.getOriginalFilename() != null && !file.getOriginalFilename().trim().isEmpty()) {
+	            try {
+	                String fileName = file.getOriginalFilename();
+	                byte[] bytes = file.getBytes();
 
-					out = new FileOutputStream(new File(fullPath));
-					out.write(bytes);
+	                String fullPath = uploadPath02 + fileName;
+	                File outputFile = new File(fullPath);
+	                out = new FileOutputStream(outputFile);
+	                out.write(bytes);
+	                out.close();
 
-					printWriter = resp.getWriter();
-					String fileUrl = req.getContextPath() + "/newtest/viewFile?filename=" + uniqueFileName;
-					System.out.println("URL : " + fileUrl);
+	                // 파일 변환
+	                String pdfFileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".pdf";
+	                String pdfFullPath = uploadPath + pdfFileName;
+	                if (fileName.endsWith(".docx")) {
+	                    convertDocxToPDF(outputFile, new File(pdfFullPath));
+	                } else if (fileName.endsWith(".hwp")) {
+	                    convertHwpToPDF(outputFile, new File(pdfFullPath));
+	                }
 
-					jsonObject.addProperty("uploaded", 1);
-					jsonObject.addProperty("fileName", fileName);
-					jsonObject.addProperty("url", fileUrl);
-					printWriter.print(jsonObject);
+	                printWriter = resp.getWriter();
+	                resp.setContentType("application/json; charset=utf-8");
 
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.err.println("IOException: " + e.getMessage());
-				} catch (Exception e) {
-					e.printStackTrace();
-					System.err.println("Exception: " + e.getMessage());
-				} finally {
-					if (out != null) {
-						out.close();
-					}
-					if (printWriter != null) {
-						printWriter.close();
-					}
-				}
-			} else {
-				System.err.println("파일이 비어 있거나 파일 이름이 잘못되었습니다.");
-			}
-		} else {
-			System.err.println("업로드된 파일을 찾을 수 없습니다.");
-		}
+	                // 파일 이름을 Base64 인코딩 후 URL 인코딩
+	                String encodedFileName = URLEncoder.encode(Base64.getEncoder().encodeToString(pdfFileName.getBytes(StandardCharsets.UTF_8)), "UTF-8");
+	                String fileUrl = req.getContextPath() + "/viewFile.do?filename=" + encodedFileName;
+	                System.out.println("URL : " + fileUrl);
+
+	                jsonObject.addProperty("uploaded", 1);
+	                jsonObject.addProperty("fileName", fileName);
+	                jsonObject.addProperty("url", fileUrl);
+	                printWriter.print(jsonObject);
+
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	                System.err.println("IOException: " + e.getMessage());
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                System.err.println("Exception: " + e.getMessage());
+	            } finally {
+	                if (out != null) {
+	                    out.close();
+	                }
+	                if (printWriter != null) {
+	                    printWriter.close();
+	                }
+	            }
+	        } else {
+	            System.err.println("파일이 비어 있거나 파일 이름이 잘못되었습니다.");
+	        }
+	    } else {
+	        System.err.println("업로드된 파일을 찾을 수 없습니다.");
+	    }
 	}
 
-	@RequestMapping(value = "/viewFile", method = RequestMethod.GET)
-	public ResponseEntity<byte[]> viewFile(@RequestParam("filename") String filename) {
-		try {
-			File file = new File(uploadPath + filename);
-			if (!file.exists()) {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			}
 
-			FileInputStream fis = new FileInputStream(file);
-			byte[] fileContent = fis.readAllBytes();
-			fis.close();
+	private void convertDocxToPDF(File inputFile, File outputFile) throws Exception {
+	    try (XWPFDocument doc = new XWPFDocument(new FileInputStream(inputFile));
+	         PDDocument pdf = new PDDocument()) {
+	        List<XWPFParagraph> paragraphs = doc.getParagraphs();
+	        PDPage page = new PDPage();
+	        pdf.addPage(page);
+	        PDPageContentStream contentStream = new PDPageContentStream(pdf, page);
+	        contentStream.setFont(PDType1Font.HELVETICA, 12);
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_TYPE, getContentType(filename));
-			headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"");
-
-			return new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
-		} catch (IOException e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	        float margin = 50;
+	        float yPosition = page.getMediaBox().getHeight() - margin;
+	        for (XWPFParagraph paragraph : paragraphs) {
+	            contentStream.beginText();
+	            contentStream.newLineAtOffset(margin, yPosition);
+	            contentStream.showText(paragraph.getText());
+	            contentStream.endText();
+	            yPosition -= 15; // 줄 간격
+	            if (yPosition <= margin) { // 새로운 페이지
+	                contentStream.close();
+	                page = new PDPage();
+	                pdf.addPage(page);
+	                contentStream = new PDPageContentStream(pdf, page);
+	                contentStream.setFont(PDType1Font.HELVETICA, 12);
+	                yPosition = page.getMediaBox().getHeight() - margin;
+	            }
+	        }
+	        contentStream.close();
+	        pdf.save(outputFile);
+	    }
 	}
+
+	private void convertHwpToPDF(File inputFile, File outputFile) throws Exception {
+	    HWPFile hwpFile = HWPReader.fromFile(inputFile.getAbsolutePath());
+	    try (PDDocument pdf = new PDDocument()) {
+	        PDPage page = new PDPage();
+	        pdf.addPage(page);
+	        PDPageContentStream contentStream = new PDPageContentStream(pdf, page);
+	        contentStream.setFont(PDType1Font.HELVETICA, 12);
+
+	        float margin = 50;
+	        float yPosition = page.getMediaBox().getHeight() - margin;
+
+	        for (Section section : hwpFile.getBodyText().getSectionList()) {
+	            for (int i = 0; i < section.getParagraphCount(); i++) {
+	                Paragraph paragraph = section.getParagraph(i);
+	                // Null 체크 추가
+	                if (paragraph.getText() != null) {
+	                    for (HWPChar hwpChar : paragraph.getText().getCharList()) {
+	                        contentStream.beginText();
+	                        contentStream.newLineAtOffset(margin, yPosition);
+	                        contentStream.showText(String.valueOf(hwpChar.getCode()));
+	                        contentStream.endText();
+	                        yPosition -= 15; // 줄 간격
+	                        if (yPosition <= margin) { // 새로운 페이지
+	                            contentStream.close();
+	                            page = new PDPage();
+	                            pdf.addPage(page);
+	                            contentStream = new PDPageContentStream(pdf, page);
+	                            contentStream.setFont(PDType1Font.HELVETICA, 12);
+	                            yPosition = page.getMediaBox().getHeight() - margin;
+	                        }
+	                    }
+	                } else {
+	                    System.out.println("Paragraph text is null for paragraph index: " + i);
+	                }
+	            }
+	        }
+	        contentStream.close();
+	        pdf.save(outputFile);
+	    }
+	}
+
+
+	
+	@RequestMapping(value = "/viewFile.do", method = RequestMethod.GET)
+	public void viewFile(@RequestParam("filename") String encodedFilename, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	    try {
+	        // URL 디코딩
+	        String urlDecodedFilename = URLDecoder.decode(encodedFilename, "UTF-8");
+	        System.out.println("URL Decoded filename: " + urlDecodedFilename);
+
+	        // Base64 디코딩
+	        String filename = new String(Base64.getDecoder().decode(urlDecodedFilename), StandardCharsets.UTF_8);
+	        System.out.println("Base64 Decoded filename: " + filename);
+
+	        // 파일 경로 확인
+	        File file = new File(uploadPath02 + filename);
+	        System.out.println("Request to view file: " + file.getAbsolutePath());
+
+	        if (!file.exists()) {
+	            res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	            System.out.println("File not found: " + file.getAbsolutePath());
+	            return;
+	        }
+
+	        res.reset();
+	        res.setContentType(getContentType(filename));
+	        res.setContentLength((int) file.length());
+
+	        String userAgent = req.getHeader("User-Agent");
+	        if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
+	            filename = URLEncoder.encode(filename, "UTF-8").replaceAll("\\+", "%20");
+	        } else {
+	            filename = new String(filename.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+	        }
+
+	        res.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+	        res.setHeader("Cache-Control", "cache, must-revalidate");
+	        res.setHeader("Content-Transfer-Encoding", "binary");
+	        res.setHeader("Pragma", "no-cache");
+	        res.setHeader("Expires", "-1");
+
+	        try (FileInputStream fis = new FileInputStream(file); OutputStream os = res.getOutputStream()) {
+	            byte[] buffer = new byte[4096];
+	            int bytesRead;
+	            while ((bytesRead = fis.read(buffer)) != -1) {
+	                os.write(buffer, 0, bytesRead);
+	            }
+	            os.flush();
+	        } catch (IOException e) {
+	            res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	            System.out.println("IOException occurred: " + e.getMessage());
+	            e.printStackTrace();
+	        }
+
+	    } catch (Exception e) {
+	        res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        System.out.println("Exception occurred: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	}
+
 
 	private String getContentType(String filename) {
-		if (filename.endsWith(".pdf")) {
-			return "application/pdf";
-		} else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
-			return "image/jpeg";
-		} else if (filename.endsWith(".png")) {
-			return "image/png";
-		} else {
-			return "application/octet-stream";
-		}
+	    if (filename.endsWith(".pdf")) {
+	        return "application/pdf";
+	    } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+	        return "image/jpeg";
+	    } else if (filename.endsWith(".png")) {
+	        return "image/png";
+	    } else {
+	        return "application/octet-stream";
+	    }
 	}
+
 }
