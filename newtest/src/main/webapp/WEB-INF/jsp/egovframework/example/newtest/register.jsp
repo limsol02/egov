@@ -14,26 +14,26 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <script type="text/javascript">
-    function delData(id) {
-        $.ajax({
-            url : "${path}/newtest/delPart.do?participant_id=" + id,
-            type : 'get',
-            success : function(res) {
-                console.log(res)
-                if (res.result != '') {
-                    alert("삭제완료");
-                    location.href = "${path}/newtest/register.do";
-                } else {
-                    alert("삭제 에러");
-                }
-            },
-            error : function(err) {
-                console.log(err)
-                console.log(err.responseJSON ? err.responseJSON.error : err.responseText);
+function delData(id) {
+    $.ajax({
+        url : "${path}/newtest/delPart.do?participant_id=" + id,
+        type : 'get',
+        dataType: 'json',
+        success : function(res) {
+            console.log(res)
+            if (res.result != '') {
+                alert("삭제완료");
+                location.href = "${path}/newtest/register.do";
+            } else {
+                alert("삭제 에러");
             }
-        });
-    }
-
+        },
+        error : function(err) {
+            console.log(err)
+            console.log(err.responseJSON ? err.responseJSON.error : err.responseText);
+        }
+    });
+}
     function uploadFiles() {
         var form = $('#frm02')[0];
         var data = new FormData(form);
@@ -83,7 +83,7 @@
 </script>
 
 <body>
-    <div class="container">
+    <div class="container" style="margin: 2%; width: 100%; max-width: 95%;">
         <h2>심사명단 등록</h2>
         <p>파일 URL 매핑</p>
         <form action="register.do" method="get" id="frm01">
@@ -98,20 +98,22 @@
             </div>
         </form>
         <!-- 파일업로드 후 매핑 -->
-        <form id="frm02" enctype="multipart/form-data">
+      <!--   <form id="frm02" enctype="multipart/form-data">
             <input type="file" class="form-control" id="files" name="files" multiple>
             <button type="button" class="btn btn-primary" onclick="uploadFiles()">업로드</button>
         </form>
         <input type="text" id="fileURL" class="form-control" readonly>
-        <div id="uploadedFiles"></div>
+        <div id="uploadedFiles"></div> -->
         <!--여기까지 -->
-        <button type="button" class="btn btn-primary" data-toggle="modal" id="openBtn" data-target="#myModal">Open modal</button>
         <table class="table table-hover">
             <thead>
                 <tr>
                     <th>지원번호</th>
                     <th>지원명</th>
                     <th>지원공모전명</th>
+                    <th>파일첨부</th>
+                    <th>업로드 버튼</th>
+                    <th>뷰어/다운</th>
                     <th></th>
                 </tr>
             </thead>
@@ -121,6 +123,9 @@
                         <td>${participant.participant_id}</td>
                         <td><input type="text" value="${participant.application_title}"></td>
                         <td><input type="text" value="${participant.competitionTitle}"></td>
+                        <td><input type="file" class="form-control" id="files" name="files" multiple></td>
+                        <td><button type="button" class="btn btn-primary" onclick="uploadFiles()">업로드</button></td>
+                        <td><p class="text-success" id="uploadedFiles"></p></td>
                         <td><p class="text-danger" onclick='delData("${participant.participant_id}")'>삭제</p></td>
                     </tr>
                 </c:forEach>
