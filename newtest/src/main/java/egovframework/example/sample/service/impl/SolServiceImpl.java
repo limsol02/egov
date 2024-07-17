@@ -135,4 +135,5 @@ public class SolServiceImpl extends EgovAbstractServiceImpl implements SolServic
 	public int uptURL(Participant upt) throws Exception {
 		return dao.uptURL(upt);
 	}
+	
 }
