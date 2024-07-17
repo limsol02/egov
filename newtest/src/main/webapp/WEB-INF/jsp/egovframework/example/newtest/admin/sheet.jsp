@@ -34,7 +34,7 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: function(res) {
-            	alert('등록성공');
+            	alert(res.result);
                 // Handle the response from the server if needed
             },
             error: function(xhr, status, error) {
