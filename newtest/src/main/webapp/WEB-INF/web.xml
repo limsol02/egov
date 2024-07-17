@@ -3,9 +3,8 @@
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
 	<display-name>egov.sample</display-name>
-    
-    
-    
+
+	<!-- 인코딩 필터 설정 -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -18,7 +17,8 @@
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>*.do</url-pattern>
 	</filter-mapping>
-    
+
+	<!-- HTML 태그 필터 설정 -->
 	<filter>
 		<filter-name>HTMLTagFilter</filter-name>
 		<filter-class>org.egovframe.rte.ptl.mvc.filter.HTMLTagFilter</filter-class>
@@ -27,16 +27,19 @@
 		<filter-name>HTMLTagFilter</filter-name>
 		<url-pattern>*.do</url-pattern>
 	</filter-mapping>
-    
+
+	<!-- Spring 컨텍스트 설정 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath*:egovframework/spring/context-*.xml</param-value>
 	</context-param>
-    
+
+	<!-- Spring ContextLoaderListener 설정 -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-    
+
+	<!-- Spring DispatcherServlet 설정 -->
 	<servlet>
 		<servlet-name>action</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -46,20 +49,24 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-    
+
+	<!-- DispatcherServlet 매핑 설정 -->
 	<servlet-mapping>
 		<servlet-name>action</servlet-name>
 		<url-pattern>*.do</url-pattern>
 	</servlet-mapping>
-    
+
+	<!-- 웰컴 파일 리스트 설정 -->
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-    
+
+	<!-- 로그인 설정 -->
 	<login-config>
 		<auth-method>BASIC</auth-method>
 	</login-config>
-    
+
+	<!-- 에러 페이지 설정 -->
 	<error-page>
 		<exception-type>java.lang.Throwable</exception-type>
 		<location>/common/error.jsp</location>
@@ -72,5 +79,26 @@
 		<error-code>500</error-code>
 		<location>/common/error.jsp</location>
 	</error-page>
-    
+
+	<!-- DefaultServlet을 통해 /uploads/* 경로의 파일을 서빙하도록 설정 -->
+	<servlet>
+		<servlet-name>default</servlet-name>
+		<servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>listings</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!-- DefaultServlet 매핑 설정 -->
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/uploads/*</url-pattern>
+	</servlet-mapping>
+
 </web-app>
