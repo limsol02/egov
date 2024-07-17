@@ -13,12 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import egovframework.example.sample.service.JuService;
+import egovframework.example.sample.service.Score;
 import egovframework.example.sample.service.Sheet;
 
 @Controller
@@ -133,18 +135,51 @@ public class JuController {
 		m.addAttribute("item",jusvc.getEvaluationItemsList());
         return "newtest/admin/sheet";
 	}
-	//평가지 등록
+	//평가지 등록(미완성 + jsp포함)
 	@ResponseBody
-	@RequestMapping(value="/addSheet.do", method=RequestMethod.POST)
-	public ResponseEntity<?> addSheet(HttpSession session,@ModelAttribute Sheet sheet){
+	@PostMapping("/addSheet.do")
+	public Map<String,Boolean> addSheet(HttpSession session,@RequestParam("competition_id") int competitionId, 
+            @RequestParam("evaluation_ids") List<Integer> evaluationIds){
 		// 폼 데이터가 제대로 전달되었는지 확인하기 위해 sheet 객체의 내용을 출력합니다.
-	    System.out.println("공모전 ID: " + sheet.getCompetition_id());
-	    System.out.println("평가항목 ID: " + sheet.getEvaluation_id());
-	    
+	    System.out.println("공모전 ID: " + competitionId);
+	    System.out.println("평가항목 ID: " + evaluationIds);
+	    Map<String, Boolean> response = new HashMap<>();
+	    response.put("result", true);
 	    // 여기서 추가적인 로직을 수행하거나 데이터를 처리할 수 있습니다.
 	    
 	    // ResponseEntity를 사용하여 클라이언트에 응답을 보냅니다.
-	    return ResponseEntity.ok().build();
-		
+	    return response;
 	}
+	
+	//점수 등록하기
+	@ResponseBody
+	@RequestMapping(value="/addScore.do", method=RequestMethod.POST,produces = "application/json")
+	public Map<String,Object> addScore(HttpSession session,@ModelAttribute List<Score> score){
+		// 평가 항목을 출력해보기
+	    String role = (String) session.getAttribute("role");
+	    if(jusvc.cheekAdmin(role) == 0) {
+	    	try 
+	    	{
+	    		System.out.println("받은 점수 목록 : " + score);
+	    		jusvc.addScore(score);
+	    		Map<String, Object> response = new HashMap<>();
+	    		response.put("message", "공모전이 추가되었습니다.");
+	    		return response; // 원하는 응답을 반환할 수 있습니다.
+	    	}
+	    	catch (Exception e) 
+	    	{
+	    		Map<String, Object> response = new HashMap<>();
+	    		response.put("message", "서버 오류가 발생했습니다.");
+	    		return response;
+	    	}  	
+	    }
+	    else 
+	    {
+	    	Map<String, Object> response = new HashMap<>();
+	    	response.put("message", "관리자 권한이 필요합니다.");
+	    	return response;
+	    }
+	}
+	
+	
 }

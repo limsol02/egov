@@ -10,4 +10,5 @@ public interface JuService {
 	void addCompetition(String title)throws Exception;
 	List<Map<String, Competition>> getCompetitionList();
 	List<Map<String, EvaluationItems>> getEvaluationItemsList();
+	void addScore(List<Score> score);
 }
