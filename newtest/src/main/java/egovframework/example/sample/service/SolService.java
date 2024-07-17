@@ -12,4 +12,5 @@ public interface SolService {
 	List<Participant> partList(int competition_id) throws Exception;
 	Competition comTitleBycomId(int paricipant_id) throws Exception;
 	int delPart(@Param("participant_id")int participant_id) throws Exception;
+	int uptURL(Participant upt) throws Exception;
 }

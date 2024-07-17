@@ -52,4 +52,7 @@
 	<delete id="delPart" parameterType="int">
 		delete from participant where participant_id = #{participant_id}
 	</delete>
+	<update parameterType="participant" id="uptURL">
+		update participant set file_URL = #{file_url} where participant_id = #{participant_id}
+	</update>
 </mapper>

@@ -7,6 +7,7 @@ public class Participant {
 	private int total_score;
     private String competitionTitle; // 공모전 이름 필드 추가
 	private FileStorage file;
+	private String file_url;
 	
 	
 	public String getCompetitionTitle() {
@@ -44,6 +45,20 @@ public class Participant {
 	}
 	public void setFile(FileStorage file) {
 		this.file = file;
+	}
+	public String getFile_url() {
+		return file_url;
+	}
+	public void setFile_url(String file_url) {
+		this.file_url = file_url;
+	}
+	public Participant(int participant_id, String file_url) {
+		super();
+		this.participant_id = participant_id;
+		this.file_url = file_url;
+	}
+	public Participant() {
+		// TODO Auto-generated constructor stub
 	}
 	
 }
