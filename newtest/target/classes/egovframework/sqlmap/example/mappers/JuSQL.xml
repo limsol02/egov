@@ -23,6 +23,13 @@
 	<insert id="addScore" parameterType="egovframework.example.sample.service.Score">
 	INSERT INTO score(Participant_id,sheet_id,score)
 	VALUES(#{Participant_id}, #{sheet_id}, #{score})
+	</insert>
 	
+	<insert id="addSheet" parameterType="java.util.List">
+		INSERT INTO sheet (competition_id, evaluation_id)
+    VALUES
+    <foreach collection="list" item="item" separator=",">
+        (#{item.competition_id}, #{item.evaluation_id})
+    </foreach>
 	</insert>
 </mapper>

@@ -138,17 +138,21 @@ public class JuController {
 	//평가지 등록(미완성 + jsp포함)
 	@ResponseBody
 	@PostMapping("/addSheet.do")
-	public Map<String,Boolean> addSheet(HttpSession session,@RequestParam("competition_id") int competitionId, 
+	public Map<String,Object> addSheet(HttpSession session,@RequestParam("competition_id") int competitionId, 
             @RequestParam("evaluation_ids") List<Integer> evaluationIds){
 		// 폼 데이터가 제대로 전달되었는지 확인하기 위해 sheet 객체의 내용을 출력합니다.
 	    System.out.println("공모전 ID: " + competitionId);
 	    System.out.println("평가항목 ID: " + evaluationIds);
-	    Map<String, Boolean> response = new HashMap<>();
-	    response.put("result", true);
-	    // 여기서 추가적인 로직을 수행하거나 데이터를 처리할 수 있습니다.
-	    
-	    // ResponseEntity를 사용하여 클라이언트에 응답을 보냅니다.
-	    return response;
+	    String role = (String) session.getAttribute("role");
+	    if (jusvc.cheekAdmin(role) == 0){
+	    	jusvc.addSheet(competitionId,evaluationIds);
+	    	Map<String, Object> response = new HashMap<>();
+	    	response.put("result","평가지등록완료");
+	    	return response;
+	    }
+	    Map<String, Object> response = new HashMap<>();
+    	response.put("result","평가지등록완료");
+    	return response; 
 	}
 	
 	//점수 등록하기

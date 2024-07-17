@@ -11,4 +11,5 @@ public interface JuService {
 	List<Map<String, Competition>> getCompetitionList();
 	List<Map<String, EvaluationItems>> getEvaluationItemsList();
 	void addScore(List<Score> score);
+	void addSheet(int competitionId, List<Integer> evaluationIds);
 }
