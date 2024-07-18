@@ -14,14 +14,59 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <title>심사위원 페이지</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#kim").click(function(){
+		setTitle(this.value);
+	})
+	$("#choi").click(function(){
+		setTitle(this.value);
+	})
+	$("#lee").click(function(){
+		setTitle(this.value);
+	})
+	$("#park").click(function(){
+		setTitle(this.value);
+	})
 
+	// 심사위원별로 공모전 이름
+	function setTitle(action) {
+		$.ajax({
+			url : '${path}/gettitle.do',
+			type : 'get',
+			data : {
+				judge_id : action
+			},
+			success : function(res) {
+				console.log(res)
+	        if ($("#resultContainer").length) {
+	            $("#resultContainer").html(res);
+	        } else {
+	            console.error("resultContainer not found on the page");
+	        }
+			},
+			error : function(err) {
+				console.log(err)
+			}
+		});
+	}
+	
+})
+
+</script>
 </head>
 <body>
 <c:if test="${not empty message}">
     <div class="alert alert-error">${message}</div>
 </c:if>
 <div class="container">
-  <h2>떙땡 공모전</h2>
+<div class="btn-group">
+		<button type="button" class="btn btn-primary" id="kim" value="1">김심사(창의적)</button>
+		<button type="button" class="btn btn-primary" id="choi" value="2">최심사(창의적)</button>
+		<button type="button" class="btn btn-primary" id="park" value="3">박심사(창의적)</button>
+		<button type="button" class="btn btn-primary" id="lee" value="4">이심사(환경보호)</button>
+	</div>
+  <h2 id="resultContainer"></h2>
   <p></p>            
   <table class="table table-hover">
     <thead>
