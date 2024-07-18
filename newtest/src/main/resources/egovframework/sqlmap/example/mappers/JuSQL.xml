@@ -39,4 +39,11 @@
 	JOIN sheet s ON ei.evaluation_id = s.evaluation_id
 	WHERE s.competition_id = #{competition_id};
 	</select>
+	
+	<select id="getSheetidBycomIdandei" resultType="Integer">
+	SELECT s.sheet_id
+	FROM sheet s
+	JOIN evaluationitems ei ON s.evaluation_id = ei.evaluation_id
+	WHERE ei.evaluation_items = #{evaluation_items} AND s.competition_id = #{competition_id};
+	</select>
 </mapper>

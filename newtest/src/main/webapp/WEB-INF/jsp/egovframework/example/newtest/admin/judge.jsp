@@ -8,10 +8,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <title>심사위원 페이지</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -25,18 +25,38 @@ $(document).ready(function() {
             $(this).val(0);
         }
     });
-});
-        // 숫자가 아닌 입력을 막기 위한 이벤트 리스너 추가
-        document.getElementById('numberInput').addEventListener('input', function (e) {
-            // 입력값을 가져와서 숫자가 아닌 문자 제거
-            var sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
-            e.target.value = sanitizedValue;
-        });
-        
-function addScore(){
-	
-}        
 
+    // 숫자가 아닌 입력을 막기 위한 이벤트 리스너 추가
+    $('#participantList').on('input', 'input[type="number"]', function(e) {
+        var sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
+        e.target.value = sanitizedValue;
+    });
+});
+
+// addScore 함수 정의
+function addScore(event, form) {
+    event.preventDefault();
+
+    var formData = $(form).serializeArray();
+    var data = {};
+
+    $(formData).each(function(index, obj){
+        data[obj.name] = obj.value;
+    });
+
+    $.ajax({
+        url: '${path}/addSheet.do',
+        type: 'POST',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(response) {
+            alert(response.result);
+        },
+        error: function(xhr, status, error) {
+            alert('등록에 실패하였습니다: ' + error);
+        }
+    });
+}
 </script>
 </head>
 <body>
@@ -44,55 +64,55 @@ function addScore(){
     <div class="alert alert-error">${message}</div>
 </c:if>
 <div class="container">
-<div class="btn-group">
-		<button type="button" class="btn btn-primary" id="kim" value="1">김심사(창의적)</button>
-		<button type="button" class="btn btn-primary" id="choi" value="2">최심사(창의적)</button>
-		<button type="button" class="btn btn-primary" id="park" value="3">박심사(창의적)</button>
-		<button type="button" class="btn btn-primary" id="lee" value="4">이심사(환경보호)</button>
-	</div>
-  <h2 id="resultContainer"></h2>
-  <p></p>            
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>지원번호</th>
-        <th>출 품 작</th>
-        <c:forEach var="evaluation_title" items="${elist}">
-            <th>${evaluation_title}</th>
-        </c:forEach>
-        <th>저장</th>
-      </tr>
-    </thead>
-    <tbody id="participantList">
-   		<c:forEach var="participant" items="${plist}" varStatus="sts">
-			<tr>
-				<form action="submitScore">
-            	<td>${participant.participant_id}</td>
-				<td>
-					<c:choose>
-						<c:when test="${participant.file != null}">
-							<a href="${path}/newtest/download.do?fileName=${participant.file.fname}">${participant.application_title}</a>
-						</c:when>
- 						<c:otherwise>
-							첨부파일 없음
-                        </c:otherwise>
-					</c:choose>
-				</td>
-				<c:forEach var="evaluation" items="${elist}">
-					<td>
-					
-						<input type="number" min="0" max="100" id="numberInput" name="score" required/>
-						<input type="hidden" name="participant_id" value="${participant.participant_id}" />
-					</td>					
-				</c:forEach>
-				<td>
-				<button type="submit" class="btn btn-primary">저장</button>
-				</td>
-				</form>
-			</tr>
-		</c:forEach>
-  	</tbody>
-  </table>
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" id="kim" value="1">김심사(창의적)</button>
+        <button type="button" class="btn btn-primary" id="choi" value="2">최심사(창의적)</button>
+        <button type="button" class="btn btn-primary" id="park" value="3">박심사(창의적)</button>
+        <button type="button" class="btn btn-primary" id="lee" value="4">이심사(환경보호)</button>
+    </div>
+    <h2 id="resultContainer"></h2>
+    <p></p>            
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>지원번호</th>
+                <th>출 품 작</th>
+                <c:forEach var="evaluation_title" items="${elist}">
+                    <th>${evaluation_title}</th>
+                </c:forEach>
+                <th>저장</th>
+            </tr>
+        </thead>
+        <tbody id="participantList">
+            <c:forEach var="participant" items="${plist}" varStatus="sts">
+                <tr>
+                    <form onsubmit="addScore(event, this)">
+                        <td>${participant.participant_id}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${participant.file != null}">
+                                    <a href="${path}/newtest/download.do?fileName=${participant.file.fname}">${participant.application_title}</a>
+                                </c:when>
+                                <c:otherwise>
+                                    첨부파일 없음
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <c:forEach var="evaluation" items="${elist}" varStatus="status">
+                            <td>
+                                <input type="number" min="0" max="100" name="score" required/>
+                                <input type="hidden" name="sheet_id" value="${slist[status.index]}"/>
+                            </td>					
+                        </c:forEach>
+                        <td>
+                            <input type="hidden" name="participant_id" value="${participant.participant_id}" />
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </td>
+                    </form>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

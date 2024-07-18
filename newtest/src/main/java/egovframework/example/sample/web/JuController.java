@@ -1,5 +1,6 @@
 package egovframework.example.sample.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,14 +153,18 @@ public class JuController {
 	//점수 등록하기
 	@ResponseBody
 	@RequestMapping(value="/addScore.do", method=RequestMethod.POST,produces = "application/json")
-	public ResponseEntity<?> addScore(HttpSession session,@ModelAttribute List<Score> score){
+	public ResponseEntity<?> addScore(HttpSession session,@ModelAttribute List<Score> scores){
 		// 평가 항목을 출력해보기
+		System.out.println("리스트 : " + scores);
 	    String role = (String) session.getAttribute("role");
 	    if(jusvc.cheekAdmin(role) == 0) {
 	    	try 
 	    	{
-	    		System.out.println("받은 점수 목록 : " + score);
-	    		jusvc.addScore(score);
+	    		System.out.println("받은 점수 목록 : " + scores.get(0).getScore());
+	    		System.out.println("받은 점수 목록 : " + scores.get(0).getSheet_id());
+	    		System.out.println("받은 점수 목록 : " + scores.get(0).getParticipant_id());
+	    		
+	    		//jusvc.addScore(scores);
 	    		return ResponseEntity.ok("{\"result\": \"점수등록되었습니다.\"}");
 	    	}
 	    	catch (Exception e) 
@@ -187,7 +192,16 @@ public class JuController {
 		}
 		try {
 			System.out.println("competition_id: " + competition_id);
-			m.addAttribute("elist", jusvc.getEitemsBycomIdInSheet(competition_id));
+			List<String> eitems = jusvc.getEitemsBycomIdInSheet(competition_id);
+			List<Integer> sheetid= new ArrayList<>();
+			for(String ei : eitems) {
+				int id = jusvc.getSheetidBycomIdandei(competition_id,ei);
+				sheetid.add(id);
+			}
+			System.out.println(eitems);
+			System.out.println(sheetid);
+			m.addAttribute("elist", eitems);
+			m.addAttribute("slist", sheetid);
 			m.addAttribute("plist", solsvc.partList(competition_id));
 		} catch (Exception e) {
 			System.out.println("찾고찾던에러: " + e.getMessage());

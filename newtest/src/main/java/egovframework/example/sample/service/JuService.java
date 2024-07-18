@@ -13,4 +13,5 @@ public interface JuService {
 	void addScore(List<Score> score);
 	void addSheet(int competitionId, List<Integer> evaluationIds);
 	List<String> getEitemsBycomIdInSheet(int competition_id);
+	int getSheetidBycomIdandei(int competition_id, String ei);
 }

@@ -89,4 +89,9 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 		return dao.getEitemsBycomIdInSheet(competition_id);
 	}
 
+	@Override
+	public int getSheetidBycomIdandei(int competition_id, String evaluationItems) {
+		return dao.getSheetidBycomIdandei(competition_id,evaluationItems);
+	}
+
 }
