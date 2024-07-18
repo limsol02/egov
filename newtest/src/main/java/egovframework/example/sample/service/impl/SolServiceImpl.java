@@ -136,4 +136,9 @@ public class SolServiceImpl extends EgovAbstractServiceImpl implements SolServic
 		return dao.uptURL(upt);
 	}
 	
+	@Override
+	public String comTitleByJudgeID(int judge_id) throws Exception {
+		return dao.comTitleByJudgeID(judge_id);
+	}
+	
 }

@@ -17,4 +17,5 @@ public interface SolMapper {
 	Competition comTitleBycomId(int paricipant_id) throws Exception;
 	int delPart(@Param("participant_id")int participant_id) throws Exception;
 	int uptURL(Participant upt) throws Exception;
+	String comTitleByJudgeID(int judge_id) throws Exception;
 }

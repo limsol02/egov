@@ -12,5 +12,7 @@
 		<typeAlias alias="file" type="egovframework.example.sample.service.FileStorage"/>
 		<typeAlias alias="participant" type="egovframework.example.sample.service.Participant"/>
 		<typeAlias alias="competition" type="egovframework.example.sample.service.Competition"/>
+		<typeAlias alias="judge" type="egovframework.example.sample.service.Judge"/>
+		<typeAlias alias="cj" type="egovframework.example.sample.service.CompetitionJudge"/>
     </typeAliases>
 </configuration>

@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Base64Utils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -419,13 +420,10 @@ public class SolController {
 			String filename = new String(decodedBytes, StandardCharsets.UTF_8);
 			System.out.println("Base64 Decoded filename: " + filename);
 
-			// 파일 경로 확인
+			// 파일 경로
 			File file = new File(uploadPath + filename);
-			System.out.println("Request to view file: " + file.getAbsolutePath());
-
 			if (!file.exists()) {
 				res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				System.out.println("File not found: " + file.getAbsolutePath());
 				return;
 			}
 
@@ -489,4 +487,6 @@ public class SolController {
 			return ResponseEntity.status(500).body("파일 URL 저장 실패: " + e.getMessage());
 		}
 	}
+	
+	
 }

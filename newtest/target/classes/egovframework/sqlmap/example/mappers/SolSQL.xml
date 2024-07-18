@@ -55,4 +55,10 @@
 	<update parameterType="participant" id="uptURL">
 		update participant set file_URL = #{file_url} where participant_id = #{participant_id}
 	</update>
+	
+	<select id="comTitleByJudgeID" parameterType="int" resultType="String">
+		select competition_title from competition where 
+		competition_id = 
+		(select competition_id from competitionjudge where judge_id = #{judge_id})
+	</select>
 </mapper>
