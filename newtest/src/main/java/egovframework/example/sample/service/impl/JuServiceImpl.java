@@ -1,5 +1,6 @@
 package egovframework.example.sample.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import egovframework.example.sample.service.Competition;
 import egovframework.example.sample.service.EvaluationItems;
 import egovframework.example.sample.service.JuService;
 import egovframework.example.sample.service.Score;
+import egovframework.example.sample.service.Sheet;
 
 
 @Service("juService")
@@ -68,5 +70,16 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 			dao.addScore(scores);
 		}
 	}
+	@Override
+	public void addSheet(int competitionId, List<Integer> evaluationIds) {
+		List<Sheet> sheets = new ArrayList<>();
+		for (Integer id : evaluationIds) {
+            Sheet sheet = new Sheet();
+            sheet.setCompetition_id(competitionId);
+            sheet.setEvaluation_id(id);
+            sheets.add(sheet);
+        }
+        dao.addSheet(sheets);
+    }
 
 }

@@ -8,6 +8,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 import egovframework.example.sample.service.Competition;
 import egovframework.example.sample.service.EvaluationItems;
 import egovframework.example.sample.service.Score;
+import egovframework.example.sample.service.Sheet;
 
 @Mapper("JuMapper")
 public interface JuMapper {
@@ -22,6 +23,8 @@ public interface JuMapper {
 	List<Map<String, EvaluationItems>> getEvaluationItemsList();
 
 	void addScore(Score score);
+
+	void addSheet(List<Sheet> sheets);
 	
 	
 }

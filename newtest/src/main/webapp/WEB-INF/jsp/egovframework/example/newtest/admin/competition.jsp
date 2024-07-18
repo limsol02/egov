@@ -23,8 +23,8 @@ function addCompetiton(){
         type: 'post',
         data: serData,
         dataType: 'json',
-        success: function(response) {
-            alert(response.message);
+        success: function(res) {
+            alert(res.result);
         },
         error: function(xhr, status, err) {
             alert('오류가 발생했습니다: ' + err);

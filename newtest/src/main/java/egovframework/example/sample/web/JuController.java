@@ -58,24 +58,18 @@ public class JuController {
 	    	{
 	    		System.out.println("받은 공모전 제목 : " + title);
 	    		jusvc.addCompetition(title);
-	    		Map<String, String> response = new HashMap<>();
-	    		response.put("message", "공모전이 추가되었습니다.");
-	    		return ResponseEntity.ok(response); // 원하는 응답을 반환할 수 있습니다.
+	    		return ResponseEntity.ok("{\"result\": \"공모전이 추가되었습니다.\"}");
 	    	}
 	    	catch (Exception e) 
 	    	{
-	    		Map<String, String> response = new HashMap<>();
-	    		response.put("message", "서버 오류가 발생했습니다.");
 	    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	    				.body(response);
+	    				.body("{\"result\": \"서버 오류가 발생했습니다.\"}");
 	    	}  	
 	    }
 	    else 
 	    {
-	    	Map<String, String> response = new HashMap<>();
-	    	response.put("message", "관리자 권한이 필요합니다.");
 	    	return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	    			.body(response);
+	    			.body("{\"result\": \"관리자 권한이 필요합니다.\"}");
 	    }
 	}
 	
@@ -103,24 +97,18 @@ public class JuController {
 	    	{
 	    		System.out.println("받은 평가 항목 : " + item);
 				jusvc.addEvaluation(item);
-				Map<String, String> response = new HashMap<>();
-		        response.put("message", "평가 항목이 추가되었습니다.");
-				return ResponseEntity.ok(response); // 원하는 응답을 반환할 수 있습니다.
+		        return ResponseEntity.ok("{\"result\": \"평가 항목이 추가되었습니다.\"}");
 			}
 	    	catch (Exception e) 
 	    	{
-	    		Map<String, String> response = new HashMap<>();
-	            response.put("message", "평가 항목 추가 중 오류가 발생했습니다.");
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(response);
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	    				.body("{\"result\": \"평가 항목 추가 중 오류가 발생했습니다.\"}");
 			}
 	    }
 	    else 
 	    {
-	    	Map<String, String> response = new HashMap<>();
-	        response.put("message", "관리자 권한이 필요합니다.");
 	    	return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(response);
+	    			.body("{\"result\": \"관리자 권한이 필요합니다.\"}");
 	    }
 	}
 	
@@ -138,23 +126,28 @@ public class JuController {
 	//평가지 등록(미완성 + jsp포함)
 	@ResponseBody
 	@PostMapping("/addSheet.do")
-	public Map<String,Boolean> addSheet(HttpSession session,@RequestParam("competition_id") int competitionId, 
+	public ResponseEntity<?> addSheet(HttpSession session,@RequestParam("competition_id") int competitionId, 
             @RequestParam("evaluation_ids") List<Integer> evaluationIds){
 		// 폼 데이터가 제대로 전달되었는지 확인하기 위해 sheet 객체의 내용을 출력합니다.
 	    System.out.println("공모전 ID: " + competitionId);
 	    System.out.println("평가항목 ID: " + evaluationIds);
-	    Map<String, Boolean> response = new HashMap<>();
-	    response.put("result", true);
-	    // 여기서 추가적인 로직을 수행하거나 데이터를 처리할 수 있습니다.
-	    
-	    // ResponseEntity를 사용하여 클라이언트에 응답을 보냅니다.
-	    return response;
+	    String role = (String) session.getAttribute("role");
+	    if (jusvc.cheekAdmin(role) == 0)
+	    {
+	    	jusvc.addSheet(competitionId,evaluationIds);
+	    	return ResponseEntity.ok("{\"result\": \"평가지등록완료\"}");
+	    }
+	    else 
+	    {
+	    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+    			.body("{\"result\": \"관리자 권한이 필요합니다.\"}");
+	    }
 	}
 	
 	//점수 등록하기
 	@ResponseBody
 	@RequestMapping(value="/addScore.do", method=RequestMethod.POST,produces = "application/json")
-	public Map<String,Object> addScore(HttpSession session,@ModelAttribute List<Score> score){
+	public ResponseEntity<?> addScore(HttpSession session,@ModelAttribute List<Score> score){
 		// 평가 항목을 출력해보기
 	    String role = (String) session.getAttribute("role");
 	    if(jusvc.cheekAdmin(role) == 0) {
@@ -162,22 +155,18 @@ public class JuController {
 	    	{
 	    		System.out.println("받은 점수 목록 : " + score);
 	    		jusvc.addScore(score);
-	    		Map<String, Object> response = new HashMap<>();
-	    		response.put("message", "공모전이 추가되었습니다.");
-	    		return response; // 원하는 응답을 반환할 수 있습니다.
+	    		return ResponseEntity.ok("{\"result\": \"점수등록되었습니다.\"}");
 	    	}
 	    	catch (Exception e) 
 	    	{
-	    		Map<String, Object> response = new HashMap<>();
-	    		response.put("message", "서버 오류가 발생했습니다.");
-	    		return response;
+	    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	    				.body("{\"result\": \"서버 오류가 발생했습니다.\"}");
 	    	}  	
 	    }
 	    else 
 	    {
-	    	Map<String, Object> response = new HashMap<>();
-	    	response.put("message", "관리자 권한이 필요합니다.");
-	    	return response;
+	    	return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	    			.body("{\"result\": \"관리자 권한이 필요합니다.\"}");
 	    }
 	}
 	

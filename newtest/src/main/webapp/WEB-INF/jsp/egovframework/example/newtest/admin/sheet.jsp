@@ -34,11 +34,7 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: function(res) {
-            	if(res.result){            		
-                alert('공모전이 추가되었습니다.');
-            	}else{
-            	alert('실패');
-            	}
+            	alert(res.result);
                 // Handle the response from the server if needed
             },
             error: function(xhr, status, error) {
