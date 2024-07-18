@@ -5,6 +5,7 @@ public class Score {
 	private int participant_id;
 	private int sheet_id;
 	private int score;
+	private int judge_id;
 	
 	public Score() {}
 	public int getScore_id() {
@@ -30,6 +31,12 @@ public class Score {
 	}
 	public void setScore(int score) {
 		this.score = score;
+	}
+	public int getJudge_id() {
+		return judge_id;
+	}
+	public void setJudge_id(int judge_id) {
+		this.judge_id = judge_id;
 	}
 	
 }

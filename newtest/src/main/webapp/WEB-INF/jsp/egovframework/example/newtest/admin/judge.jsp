@@ -14,7 +14,29 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <title>심사위원 페이지</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script>
+// 숫자 입력 100이하 0이상으로 조정
+$(document).ready(function() {
+    $('input[type="number"]').on('input', function() {
+        var value = parseInt($(this).val(), 10);
+        if (value > 100) {
+            $(this).val(100);
+        } else if (value < 0) {
+            $(this).val(0);
+        }
+    });
+});
+        // 숫자가 아닌 입력을 막기 위한 이벤트 리스너 추가
+        document.getElementById('numberInput').addEventListener('input', function (e) {
+            // 입력값을 가져와서 숫자가 아닌 문자 제거
+            var sanitizedValue = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = sanitizedValue;
+        });
+        
+function addScore(){
+	
+}        
+</script>
 </head>
 <body>
 <c:if test="${not empty message}">
@@ -31,11 +53,13 @@
         <c:forEach var="evaluation_title" items="${elist}">
             <th>${evaluation_title}</th>
         </c:forEach>
+        <th>저장</th>
       </tr>
     </thead>
     <tbody id="participantList">
    		<c:forEach var="participant" items="${plist}" varStatus="sts">
 			<tr>
+				<form action="submitScore">
             	<td>${participant.participant_id}</td>
 				<td>
 					<c:choose>
@@ -47,6 +71,17 @@
                         </c:otherwise>
 					</c:choose>
 				</td>
+				<c:forEach var="evaluation" items="${elist}">
+					<td>
+					
+						<input type="number" min="0" max="100" id="numberInput" name="score" required/>
+						<input type="hidden" name="participant_id" value="${participant.participant_id}" />
+					</td>					
+				</c:forEach>
+				<td>
+				<button type="submit" class="btn btn-primary">저장</button>
+				</td>
+				</form>
 			</tr>
 		</c:forEach>
   	</tbody>
