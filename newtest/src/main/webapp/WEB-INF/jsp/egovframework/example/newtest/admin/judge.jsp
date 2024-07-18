@@ -32,7 +32,7 @@ $(document).ready(function(){
 	// 심사위원별로 공모전 이름
 	function setTitle(action) {
 		$.ajax({
-			url : '${path}/gettitle.do',
+			url : '${path}/newtest/gettitle.do',
 			type : 'get',
 			data : {
 				judge_id : action
