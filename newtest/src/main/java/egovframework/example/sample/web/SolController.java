@@ -109,6 +109,14 @@ public class SolController {
 		d.addAttribute("msg", msg);
 		return msg;
 	}
+	
+	// 심사위원 별 공모전 이름 출력
+	@RequestMapping(value = "/gettitle.do", method = RequestMethod.GET, produces = "text/plain;charset=UTF-8")
+	@ResponseBody
+	public String getTitle(@RequestParam("judge_id")int judge_id) throws Exception {
+		System.out.println("심사위원 아이디 : "+judge_id);
+		return service.comTitleByJudgeID(judge_id);
+	}
 
 	// 공모전 리스트
 	@RequestMapping(value = "/participant.do", method = RequestMethod.GET)

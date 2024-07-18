@@ -13,6 +13,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
+<h1 id="resultContainer"></h1>
+
 <c:if test="${not empty message}">
     <div class="alert alert-error">${message}</div>
 </c:if>
