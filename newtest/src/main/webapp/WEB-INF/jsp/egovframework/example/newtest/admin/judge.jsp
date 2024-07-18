@@ -36,6 +36,7 @@ $(document).ready(function() {
 function addScore(){
 	
 }        
+
 </script>
 </head>
 <body>
@@ -43,7 +44,13 @@ function addScore(){
     <div class="alert alert-error">${message}</div>
 </c:if>
 <div class="container">
-  <h2>떙땡 공모전</h2>
+<div class="btn-group">
+		<button type="button" class="btn btn-primary" id="kim" value="1">김심사(창의적)</button>
+		<button type="button" class="btn btn-primary" id="choi" value="2">최심사(창의적)</button>
+		<button type="button" class="btn btn-primary" id="park" value="3">박심사(창의적)</button>
+		<button type="button" class="btn btn-primary" id="lee" value="4">이심사(환경보호)</button>
+	</div>
+  <h2 id="resultContainer"></h2>
   <p></p>            
   <table class="table table-hover">
     <thead>
