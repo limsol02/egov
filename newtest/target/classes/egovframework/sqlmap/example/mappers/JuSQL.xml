@@ -32,4 +32,11 @@
         (#{item.competition_id}, #{item.evaluation_id})
     </foreach>
 	</insert>
+	
+	<select id="getEitemsBycomIdInSheet" resultType="java.lang.String">
+	SELECT ei.evaluation_items
+	FROM EvaluationItems ei
+	JOIN sheet s ON ei.evaluation_id = s.evaluation_id
+	WHERE s.competition_id = #{competition_id};
+	</select>
 </mapper>

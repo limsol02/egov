@@ -27,6 +27,7 @@
 		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:example" /> 
 		<property name="username" value="user"/> <property name="password" value="password"/> 
 		</bean> -->
+	<!-- 
 	<bean id="dataSource"
 		class="org.apache.commons.dbcp2.BasicDataSource"
 		destroy-method="close">
@@ -37,12 +38,13 @@
 		<property name="username" value="root" />
 		<property name="password" value="1111" />
 	</bean>
-	<!-- 
+	-->
+	 
 	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
 	    <property name="driverClassName" value="org.mariadb.jdbc.Driver" />
 	    <property name="url" value="jdbc:mariadb://192.168.219.156:3306/example" />
 	    <property name="username" value="test" />
 	    <property name="password" value="1111" />
 	</bean>
-	 -->
+	
 </beans>

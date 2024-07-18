@@ -25,6 +25,8 @@ public interface JuMapper {
 	void addScore(Score score);
 
 	void addSheet(List<Sheet> sheets);
+
+	List<String> getEitemsBycomIdInSheet(int competition_id);
 	
 	
 }

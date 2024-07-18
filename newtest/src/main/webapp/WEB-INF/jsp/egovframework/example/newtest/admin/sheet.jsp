@@ -31,6 +31,7 @@ $(document).ready(function() {
             url: '${path}/addSheet.do',
             type: 'POST',
             data: formData,
+            dataType: 'json'
             contentType: false,
             processData: false,
             success: function(res) {

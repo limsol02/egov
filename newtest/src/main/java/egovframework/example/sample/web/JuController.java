@@ -18,16 +18,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import egovframework.example.sample.service.JuService;
 import egovframework.example.sample.service.Score;
 import egovframework.example.sample.service.Sheet;
+import egovframework.example.sample.service.SolService;
 
 @Controller
 public class JuController {
 
 	@Resource(name="juService")
 	private JuService jusvc;
+	
+	@Resource(name = "solService")
+	private SolService solsvc;
 
 	//관리자 페이지 보여주기
 	@RequestMapping(value = "/admin.do", method = RequestMethod.GET)
@@ -170,5 +175,23 @@ public class JuController {
 	    }
 	}
 	
-	
+	//심사위원 공모전 
+	@RequestMapping(value = "/judge.do", method = RequestMethod.GET)
+	public String judgePage(Model m, HttpSession session,RedirectAttributes redirectAttributes,
+			@RequestParam(value="competition_id",defaultValue="0") int competition_id) throws Exception{
+		
+		String role = (String) session.getAttribute("role");
+		if (role == null || !role.equals("judge")) {
+			redirectAttributes.addFlashAttribute("message", "접근 권한이 없습니다.");
+			return "redirect:/sess.do"; // 접근 권한이 없으면 리다이렉트
+		}
+		try {
+			System.out.println("competition_id: " + competition_id);
+			m.addAttribute("elist", jusvc.getEitemsBycomIdInSheet(competition_id));
+			m.addAttribute("plist", solsvc.partList(competition_id));
+		} catch (Exception e) {
+			System.out.println("찾고찾던에러: " + e.getMessage());
+		}
+		return "newtest/admin/judge";
+	}
 }

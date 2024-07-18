@@ -58,18 +58,20 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 	public List<Map<String, Competition>> getCompetitionList() {
 		return dao.getCompetitionList();
 	}
-
+	//평가항목 리스트 가져오기
 	@Override
 	public List<Map<String, EvaluationItems>> getEvaluationItemsList() {
 		return dao.getEvaluationItemsList();
 	}
-
+	//점수 저장
 	@Override
 	public void addScore(List<Score> score) {
 		for(Score scores : score) {
 			dao.addScore(scores);
 		}
 	}
+	
+	//평가지 저장
 	@Override
 	public void addSheet(int competitionId, List<Integer> evaluationIds) {
 		List<Sheet> sheets = new ArrayList<>();
@@ -81,5 +83,10 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
         }
         dao.addSheet(sheets);
     }
+	//공모전 아이디로 평가항목 가져오기
+	@Override
+	public List<String> getEitemsBycomIdInSheet(int competition_id) {
+		return dao.getEitemsBycomIdInSheet(competition_id);
+	}
 
 }
