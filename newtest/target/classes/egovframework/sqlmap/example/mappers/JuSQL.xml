@@ -21,8 +21,8 @@
 	FROM evaluationitems
 	</select>
 	<insert id="addScore" parameterType="egovframework.example.sample.service.Score">
-	INSERT INTO score(Participant_id,sheet_id,score)
-	VALUES(#{Participant_id}, #{sheet_id}, #{score})
+	INSERT INTO score(Participant_id,sheet_id,score,judge_id)
+	VALUES(#{participant_id}, #{sheet_id}, #{score}, #{judge_id})
 	</insert>
 	
 	<insert id="addSheet" parameterType="java.util.List">
@@ -46,4 +46,13 @@
 	JOIN evaluationitems ei ON s.evaluation_id = ei.evaluation_id
 	WHERE ei.evaluation_items = #{evaluation_items} AND s.competition_id = #{competition_id};
 	</select>
-</mapper>
+	
+	<select id="competitionByJudgeID" resultType="egovframework.example.sample.service.Competition">
+	SELECT c.*
+	FROM competition c
+	JOIN competitionjudge cj ON c.competition_id = cj.competition_id
+	WHERE cj.judge_id = #{judge_id};
+
+	</select>
+	
+	</mapper>

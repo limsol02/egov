@@ -30,6 +30,8 @@ public interface JuMapper {
 	List<String> getEitemsBycomIdInSheet(int competition_id);
 
 	Integer getSheetidBycomIdandei(@Param("competition_id")int competition_id,@Param("evaluation_items") String evaluation_items);
+
+	List<Competition> competitionByJudgeID(int judge_id);
 	
 	
 }

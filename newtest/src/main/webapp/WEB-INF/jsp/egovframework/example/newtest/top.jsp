@@ -91,10 +91,7 @@
 				<li class="nav-item"><a class="nav-link" href="${path}/register.do">참여자 리스트 작성(관리자용)</a></li>
 				<!-- ========================================================================= -->
 				<li class="nav-item"><a class="nav-link" href="${path}/admin.do">관리자페이지</a></li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">참여자 등록(관리자용)</a></li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>
-				</li>
-				<li class="nav-item"><a class="nav-link" href="${path}/#">필요탭</a>
+				<li class="nav-item"><a class="nav-link" href="${path}/judgeCompetitionPage.do">심사위원전용공모전</a>
 				</li>
 			</ul>
 		</div>

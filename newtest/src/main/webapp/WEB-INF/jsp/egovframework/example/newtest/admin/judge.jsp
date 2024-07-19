@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <jsp:include page="../top.jsp" flush="true" />
+<c:set var="path" value="${pageContext.request.contextPath }" />
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,18 +38,15 @@ $(document).ready(function() {
 function addScore(event, form) {
     event.preventDefault();
 
-    var formData = $(form).serializeArray();
-    var data = {};
-
-    $(formData).each(function(index, obj){
-        data[obj.name] = obj.value;
-    });
-
+    var formData = $(form).serialize();
+    
+    console.log("전송할 데이터:", formData);
+    alert("전송할 데이터:\n" + formData);
     $.ajax({
-        url: '${path}/addSheet.do',
+        url: '${path}/addScore.do',
         type: 'POST',
-        data: JSON.stringify(data),
-        contentType: 'application/json',
+        data: formData,
+        dataType: 'json',
         success: function(response) {
             alert(response.result);
         },
@@ -57,6 +55,7 @@ function addScore(event, form) {
         }
     });
 }
+
 </script>
 </head>
 <body>
@@ -85,34 +84,35 @@ function addScore(event, form) {
         </thead>
         <tbody id="participantList">
             <c:forEach var="participant" items="${plist}" varStatus="sts">
-                <tr>
-                    <form onsubmit="addScore(event, this)">
-                        <td>${participant.participant_id}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${participant.file != null}">
-                                    <a href="${path}/newtest/download.do?fileName=${participant.file.fname}">${participant.application_title}</a>
-                                </c:when>
-                                <c:otherwise>
-                                    첨부파일 없음
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <c:forEach var="evaluation" items="${elist}" varStatus="status">
-                            <td>
-                                <input type="number" min="0" max="100" name="score" required/>
-                                <input type="hidden" name="sheet_id" value="${slist[status.index]}"/>
-                            </td>					
-                        </c:forEach>
-                        <td>
-                            <input type="hidden" name="participant_id" value="${participant.participant_id}" />
-                            <button type="submit" class="btn btn-primary">저장</button>
-                        </td>
-                    </form>
-                </tr>
-            </c:forEach>
+		    <tr>
+		        <form onsubmit="addScore(event, this)">
+		            <td>${participant.participant_id}</td>
+		            <td>
+		                <c:choose>
+		                    <c:when test="${participant.file != null}">
+		                        <a href="${path}/newtest/download.do?fileName=${participant.file.fname}">${participant.application_title}</a>
+		                    </c:when>
+		                    <c:otherwise>
+		                        첨부파일 없음
+		                    </c:otherwise>
+		                </c:choose>
+		            </td>
+		            <c:forEach var="evaluation" items="${elist}" varStatus="status">
+		                <td>
+		                    <input type="number" min="0" max="100" name="score" required/>
+		                    <input type="hidden" name="sheetId" value="${slist[status.index]}"/>
+		                </td>					
+		            </c:forEach>
+		            <td>
+		                <input type="hidden" name="participantId" value="${participant.participant_id}" />
+		                <button type="submit" class="btn btn-primary">저장</button>
+		            </td>
+		        </form>
+		    </tr>
+		</c:forEach>
         </tbody>
     </table>
 </div>
 </body>
 </html>
+

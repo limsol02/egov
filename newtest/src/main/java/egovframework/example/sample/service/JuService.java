@@ -10,8 +10,9 @@ public interface JuService {
 	void addCompetition(String title)throws Exception;
 	List<Map<String, Competition>> getCompetitionList();
 	List<Map<String, EvaluationItems>> getEvaluationItemsList();
-	void addScore(List<Score> score);
 	void addSheet(int competitionId, List<Integer> evaluationIds);
 	List<String> getEitemsBycomIdInSheet(int competition_id);
 	int getSheetidBycomIdandei(int competition_id, String ei);
+	void addScore(List<Integer> score, List<Integer> sheet, int participant_id,int judge_id);
+	List<Competition> competitionByJudgeID(int judge_id);
 }

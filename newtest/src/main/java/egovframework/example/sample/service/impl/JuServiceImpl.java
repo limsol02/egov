@@ -65,9 +65,16 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 	}
 	//점수 저장
 	@Override
-	public void addScore(List<Score> score) {
-		for(Score scores : score) {
-			dao.addScore(scores);
+	public void addScore(List<Integer> score, List<Integer> sheet, int participant_id,int judge_id) {
+		for (int i = 0; i < score.size(); i++) {
+    		Score s = new Score();
+    		int a = score.get(i);
+    		int b = sheet.get(i);
+    		s.setScore(a);
+    		s.setSheet_id(b);
+    		s.setParticipant_id(participant_id);
+    		s.setJudge_id(judge_id);
+    		dao.addScore(s);
 		}
 	}
 	
@@ -93,5 +100,12 @@ public class JuServiceImpl extends EgovAbstractServiceImpl implements JuService 
 	public int getSheetidBycomIdandei(int competition_id, String evaluationItems) {
 		return dao.getSheetidBycomIdandei(competition_id,evaluationItems);
 	}
+
+	@Override
+	public List<Competition> competitionByJudgeID(int judge_id) {
+		return dao.competitionByJudgeID(judge_id);
+		
+	}
+
 
 }

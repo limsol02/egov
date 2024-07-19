@@ -15,12 +15,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import egovframework.example.sample.service.Competition;
 import egovframework.example.sample.service.JuService;
 import egovframework.example.sample.service.Score;
 import egovframework.example.sample.service.Sheet;
@@ -153,31 +155,24 @@ public class JuController {
 	//점수 등록하기
 	@ResponseBody
 	@RequestMapping(value="/addScore.do", method=RequestMethod.POST,produces = "application/json")
-	public ResponseEntity<?> addScore(HttpSession session,@ModelAttribute List<Score> scores){
+	public ResponseEntity<?> addScore(HttpSession session,
+									@RequestParam("score")List<Integer> score,
+									@RequestParam("sheetId")List<Integer> sheet, 
+									@RequestParam("participantId")int participant_id){
 		// 평가 항목을 출력해보기
-		System.out.println("리스트 : " + scores);
-	    String role = (String) session.getAttribute("role");
-	    if(jusvc.cheekAdmin(role) == 0) {
-	    	try 
-	    	{
-	    		System.out.println("받은 점수 목록 : " + scores.get(0).getScore());
-	    		System.out.println("받은 점수 목록 : " + scores.get(0).getSheet_id());
-	    		System.out.println("받은 점수 목록 : " + scores.get(0).getParticipant_id());
-	    		
-	    		//jusvc.addScore(scores);
-	    		return ResponseEntity.ok("{\"result\": \"점수등록되었습니다.\"}");
-	    	}
-	    	catch (Exception e) 
-	    	{
-	    		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	    				.body("{\"result\": \"서버 오류가 발생했습니다.\"}");
-	    	}  	
-	    }
-	    else 
-	    {
-	    	return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	    			.body("{\"result\": \"관리자 권한이 필요합니다.\"}");
-	    }
+        String role = (String) session.getAttribute("role");
+        if (role != null && role.equals("judge")) {
+            try {
+                jusvc.addScore(score,sheet,participant_id,(int)session.getAttribute("judge_id"));
+                return ResponseEntity.ok("{\"result\": \"점수등록되었습니다.\"}");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("{\"result\": \"서버 오류가 발생했습니다.\"}");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("{\"result\": \"관리자 권한이 필요합니다.\"}");
+        }
 	}
 	
 	//심사위원 공모전 
@@ -208,4 +203,17 @@ public class JuController {
 		}
 		return "newtest/admin/judge";
 	}
+	@RequestMapping(value = "/judgeCompetitionPage.do", method = RequestMethod.GET)
+	public String judgeCompetitionPage(Model m, HttpSession session) throws Exception{
+		String role = (String) session.getAttribute("role");
+        if (role != null && role.equals("judge")) {
+        	List<Competition> clist = jusvc.competitionByJudgeID((int)session.getAttribute("judge_id"));
+        	m.addAttribute("clist",clist);
+        	m.addAttribute("judge_id",(int)session.getAttribute("judge_id"));
+        	System.out.println("Competition List: " + clist);
+        	return "newtest/admin/judgeCompetitionPage";
+        }
+        return "redirect:/sess.do";
+	}
+	
 }

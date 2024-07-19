@@ -8,6 +8,10 @@ public class Score {
 	private int judge_id;
 	
 	public Score() {}
+	public Score(Integer integer, Integer integer2, int participant_id) {
+	}
+	public Score(Integer integer, Integer integer2, int participant_id,int judge_id) {
+	}
 	public int getScore_id() {
 		return score_id;
 	}
@@ -38,5 +42,5 @@ public class Score {
 	public void setJudge_id(int judge_id) {
 		this.judge_id = judge_id;
 	}
-	
+
 }

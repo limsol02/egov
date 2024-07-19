@@ -91,6 +91,8 @@ public class SolController {
 		switch (action) {
 		case "judge":
 			session.setAttribute("role", "judge");
+			//확인용
+			session.setAttribute("judge_id", 1);
 			msg = "심사위원 세션 설정";
 			break;
 		case "admin":
